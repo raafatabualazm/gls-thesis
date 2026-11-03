@@ -1,0 +1,255 @@
+{
+ "designs": {
+  "gcd": {
+   "bit_exact": {
+    "outGL0AM.gcd.saif.gz": true,
+    "gcd.hgr": true,
+    "gcd.hgr.part.8": true,
+    "gcd.8.partitions": "semantically identical (bytes differ, nondeterministic pickling)",
+    "gcd_waves_0.npz": true,
+    "gcd_regs.npz": true
+   },
+   "run_to_run_deterministic": {
+    "outGL0AM.gcd.saif.gz": {
+     "cu118": true,
+     "cu12": true
+    },
+    "gcd.hgr": {
+     "cu118": true,
+     "cu12": true
+    },
+    "gcd.hgr.part.8": {
+     "cu118": true,
+     "cu12": true
+    },
+    "gcd.8.partitions": {
+     "cu118": false,
+     "cu12": false
+    },
+    "gcd_waves_0.npz": {
+     "cu118": true,
+     "cu12": true
+    },
+    "gcd_regs.npz": {
+     "cu118": true,
+     "cu12": true
+    }
+   },
+   "timings_median_s": {
+    "generateGraph_wall_s": {
+     "cu118": 1.5,
+     "cu12": 1.6,
+     "n": [
+      5,
+      5
+     ]
+    },
+    "graph_compile_s": {
+     "cu118": 1.23,
+     "cu12": 1.101,
+     "n": [
+      5,
+      5
+     ]
+    },
+    "partitioningPostprocessing_wall_s": {
+     "cu118": 3.17,
+     "cu12": 3.49,
+     "n": [
+      5,
+      5
+     ]
+    },
+    "partitioningSetup_wall_s": {
+     "cu118": 4.23,
+     "cu12": 5.02,
+     "n": [
+      5,
+      5
+     ]
+    },
+    "resim_s": {
+     "cu118": 0.483,
+     "cu12": 0.464,
+     "n": [
+      5,
+      5
+     ]
+    },
+    "runSim_wall_s": {
+     "cu118": 11.35,
+     "cu12": 11.77,
+     "n": [
+      5,
+      5
+     ]
+    },
+    "signal_T_s": {
+     "cu118": 0.018,
+     "cu12": 0.024,
+     "n": [
+      5,
+      5
+     ]
+    },
+    "splitLargeFOs_wall_s": {
+     "cu118": 2.06,
+     "cu12": 2.25,
+     "n": [
+      5,
+      5
+     ]
+    },
+    "waveform_creation_s": {
+     "cu118": 0.321,
+     "cu12": 0.308,
+     "n": [
+      5,
+      5
+     ]
+    },
+    "zero_delay_sim_s": {
+     "cu118": 0.003,
+     "cu12": 0.003,
+     "n": [
+      5,
+      5
+     ]
+    }
+   }
+  },
+  "acc8": {
+   "bit_exact": {
+    "outGL0AM.acc8.saif.gz": true,
+    "acc8.hgr": true,
+    "acc8.hgr.part.8": true,
+    "acc8.8.partitions": "semantically identical (bytes differ, nondeterministic pickling)",
+    "acc8_waves_0.npz": true,
+    "acc8_regs.npz": true
+   },
+   "run_to_run_deterministic": {
+    "outGL0AM.acc8.saif.gz": {
+     "cu118": true,
+     "cu12": true
+    },
+    "acc8.hgr": {
+     "cu118": true,
+     "cu12": true
+    },
+    "acc8.hgr.part.8": {
+     "cu118": true,
+     "cu12": true
+    },
+    "acc8.8.partitions": {
+     "cu118": false,
+     "cu12": false
+    },
+    "acc8_waves_0.npz": {
+     "cu118": true,
+     "cu12": true
+    },
+    "acc8_regs.npz": {
+     "cu118": true,
+     "cu12": true
+    }
+   },
+   "timings_median_s": {
+    "generateGraph_wall_s": {
+     "cu118": 1.48,
+     "cu12": 1.57,
+     "n": [
+      5,
+      5
+     ]
+    },
+    "graph_compile_s": {
+     "cu118": 0.765,
+     "cu12": 0.68,
+     "n": [
+      5,
+      5
+     ]
+    },
+    "partitioningPostprocessing_wall_s": {
+     "cu118": 3.1,
+     "cu12": 3.45,
+     "n": [
+      5,
+      5
+     ]
+    },
+    "partitioningSetup_wall_s": {
+     "cu118": 3.76,
+     "cu12": 4.04,
+     "n": [
+      5,
+      5
+     ]
+    },
+    "resim_s": {
+     "cu118": 0.453,
+     "cu12": 0.586,
+     "n": [
+      5,
+      5
+     ]
+    },
+    "runSim_wall_s": {
+     "cu118": 11.03,
+     "cu12": 11.4,
+     "n": [
+      5,
+      5
+     ]
+    },
+    "signal_T_s": {
+     "cu118": 0.026,
+     "cu12": 0.029,
+     "n": [
+      5,
+      5
+     ]
+    },
+    "splitLargeFOs_wall_s": {
+     "cu118": 2.02,
+     "cu12": 2.11,
+     "n": [
+      5,
+      5
+     ]
+    },
+    "waveform_creation_s": {
+     "cu118": 0.201,
+     "cu12": 0.272,
+     "n": [
+      5,
+      5
+     ]
+    },
+    "zero_delay_sim_s": {
+     "cu118": 0.17,
+     "cu12": 0.186,
+     "n": [
+      5,
+      5
+     ]
+    }
+   }
+  }
+ },
+ "notes": [
+  ".8.partitions raw bytes differ run-to-run in BOTH envs (pickle serialization); semantic compare (scripts/cmp_partitions.py) shows all 10 runs identical per design",
+  "SAIF compared after stripping DATE/VENDOR/PROGRAM/VERSION header lines",
+  "adapter input pickles re-serialized under numpy 1.26 (gl0am_in2_np1.tgz) because numpy-2 pickles (numpy._core) are unreadable by numpy 1.24; same inputs used for both envs"
+ ],
+ "env": {
+  "cu118": "upstream GL0AM 14b5dd0 + licence-header sed + rs_patch hooks; CUDA 11.8 nvcc, gcc 11, CuPy 11.0.0b2 fork, torch 2.2.0+cu118, DGL 2.0.0, numpy 1.24.4",
+  "cu12": "cuda12-port branch; CUDA 12.8",
+  "gpu": "RTX 3060 Laptop 6GB, WSL2",
+  "runs": 5,
+  "durations": {
+   "gcd": 400000,
+   "acc8": 10400000
+  }
+ }
+}
