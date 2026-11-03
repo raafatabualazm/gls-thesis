@@ -1,0 +1,1007 @@
+[
+[
+"AND2",
+[
+"A1",
+"A2"
+],
+"int(bits[0] and bits[1])"
+],
+[
+"AND3",
+[
+"A1",
+"A2",
+"A3"
+],
+"int(bits[0] and bits[1] and bits[2])"
+],
+[
+"AND4",
+[
+"A1",
+"A2",
+"A3",
+"A4"
+],
+"int(bits[0] and bits[1] and bits[2] and bits[3])"
+],
+[
+"AO211",
+[
+"A1",
+"A2",
+"B",
+"C"
+],
+"int((bits[0] and bits[1]) or bits[2] or bits[3])"
+],
+[
+"AO21",
+[
+"A1",
+"A2",
+"B"
+],
+"int((bits[0] and bits[1]) or bits[2])"
+],
+[
+"AO221",
+[
+"A1",
+"A2",
+"B1",
+"B2",
+"C"
+],
+"int((bits[0] and bits[1]) or (bits[2] and bits[3]) or bits[4])"
+],
+[
+"AO2222",
+[
+"A1",
+"A2",
+"B1",
+"B2",
+"C1",
+"C2",
+"D1",
+"D2"
+],
+"int((bits[0] and bits[1]) or (bits[2] and bits[3]) or (bits[4] and bits[5]) or (bits[6] and bits[7]))"
+],
+[
+"AO222",
+[
+"A1",
+"A2",
+"B1",
+"B2",
+"C1",
+"C2"
+],
+"int((bits[0] and bits[1]) or (bits[2] and bits[3]) or (bits[4] and bits[5]))"
+],
+[
+"AO22",
+[
+"A1",
+"A2",
+"B1",
+"B2"
+],
+"int((bits[0] and bits[1]) or (bits[2] and bits[3]))"
+],
+[
+"AO31",
+[
+"A1",
+"A2",
+"A3",
+"B"
+],
+"int((bits[0] and bits[1] and bits[2]) or bits[3])"
+],
+[
+"AO32",
+[
+"A1",
+"A2",
+"A3",
+"B1",
+"B2"
+],
+"int((bits[0] and bits[1] and bits[2]) or (bits[3] and bits[4]))"
+],
+[
+"AO33",
+[
+"A1",
+"A2",
+"A3",
+"B1",
+"B2",
+"B3"
+],
+"int((bits[0] and bits[1] and bits[2]) or (bits[3] and bits[4] and bits[5]))"
+],
+[
+"AOAI211",
+[
+"A1",
+"A2",
+"B",
+"C"
+],
+"int(not((((bits[0] and bits[1]) or bits[2]) and bits[3])))"
+],
+[
+"AOI211",
+[
+"A1",
+"A2",
+"B",
+"C"
+],
+"int(not((bits[0] and bits[1]) or bits[2] or bits[3]))"
+],
+[
+"AOI21",
+[
+"A1",
+"A2",
+"B"
+],
+"int(not((bits[0] and bits[1]) or bits[2]))"
+],
+[
+"AOI221",
+[
+"A1",
+"A2",
+"B1",
+"B2",
+"C"
+],
+"int(not((bits[0] and bits[1]) or (bits[2] and bits[3]) or bits[4]))"
+],
+[
+"AOI222",
+[
+"A1",
+"A2",
+"B1",
+"B2",
+"C1",
+"C2"
+],
+"int(not((bits[0] and bits[1]) or (bits[2] and bits[3]) or (bits[4] and bits[5])))"
+],
+[
+"AOI22",
+[
+"A1",
+"A2",
+"B1",
+"B2"
+],
+"int(not((bits[0] and bits[1]) or (bits[2] and bits[3])))"
+],
+[
+"AOI31",
+[
+"A1",
+"A2",
+"A3",
+"B"
+],
+"int(not((bits[0] and bits[1] and bits[2]) or bits[3]))"
+],
+[
+"AOI32",
+[
+"A1",
+"A2",
+"A3",
+"B1",
+"B2"
+],
+"int(not((bits[0] and bits[1] and bits[2]) or (bits[3] and bits[4])))"
+],
+[
+"AOI33",
+[
+"A1",
+"A2",
+"A3",
+"B1",
+"B2",
+"B3"
+],
+"int(not((bits[0] and bits[1] and bits[2]) or (bits[3] and bits[4] and bits[5])))"
+],
+[
+"BUFF",
+[
+"I"
+],
+"int(bits[0])"
+],
+[
+"MUX2",
+[
+"I0",
+"I1",
+"S"
+],
+"int((not(bits[2]) and bits[0]) or (bits[2] and bits[1]))"
+],
+[
+"MUX2N",
+[
+"I0",
+"I1",
+"S"
+],
+"int(not((not(bits[2]) and bits[0]) or (bits[2] and bits[1])))"
+],
+[
+"INV",
+[
+"I"
+],
+"int(not(bits[0]))"
+],
+[
+"NAND2",
+[
+"A1",
+"A2"
+],
+"int(not(bits[0] and bits[1]))"
+],
+[
+"NAND3",
+[
+"A1",
+"A2",
+"A3"
+],
+"int(not(bits[0] and bits[1] and bits[2]))"
+],
+[
+"NOR2",
+[
+"A1",
+"A2"
+],
+"int(not(bits[0] or bits[1]))"
+],
+[
+"NOR3",
+[
+"A1",
+"A2",
+"A3"
+],
+"int(not(bits[0] or bits[1] or bits[2]))"
+],
+[
+"OR2",
+[
+"A1",
+"A2"
+],
+"int(bits[0] or bits[1])"
+],
+[
+"XOR2",
+[
+"A1",
+"A2"
+],
+"int(bits[0] ^ bits[1])"
+],
+[
+"FA_SUM",
+[
+"A",
+"B",
+"CI"
+],
+"int(bits[0] ^ bits[1] ^ bits[2])"
+],
+[
+"FA_CO",
+[
+"A",
+"B",
+"CI"
+],
+"int((bits[0] and bits[1]) or (bits[2] and (bits[0] ^ bits[1])))"
+],
+[
+"dummy0",
+[
+"A",
+"B",
+"CI"
+],
+"int(bits[0] ^ bits[1] ^ bits[2])"
+],
+[
+"dummy1",
+[
+"A",
+"B",
+"CI"
+],
+"int((bits[0] and bits[1]) or (bits[2] and (bits[0] ^ bits[1])))"
+],
+[
+"dummy2",
+[
+"A",
+"B",
+"CI"
+],
+"int(bits[0] ^ bits[1] ^ bits[2])"
+],
+[
+"dummy3",
+[
+"A",
+"B",
+"CI"
+],
+"int((bits[0] and bits[1]) or (bits[2] and (bits[0] ^ bits[1])))"
+],
+[
+"dummy4",
+[
+"A",
+"B",
+"CI"
+],
+"int(bits[0] ^ bits[1] ^ bits[2])"
+],
+[
+"dummy5",
+[
+"A",
+"B",
+"CI"
+],
+"int((bits[0] and bits[1]) or (bits[2] and (bits[0] ^ bits[1])))"
+],
+[
+"dummy6",
+[
+"A",
+"B",
+"CI"
+],
+"int(bits[0] ^ bits[1] ^ bits[2])"
+],
+[
+"dummy7",
+[
+"A",
+"B",
+"CI"
+],
+"int((bits[0] and bits[1]) or (bits[2] and (bits[0] ^ bits[1])))"
+],
+[
+"dummy8",
+[
+"A",
+"B",
+"CI"
+],
+"int(bits[0] ^ bits[1] ^ bits[2])"
+],
+[
+"dummy9",
+[
+"A",
+"B",
+"CI"
+],
+"int((bits[0] and bits[1]) or (bits[2] and (bits[0] ^ bits[1])))"
+],
+[
+"dummy10",
+[
+"A",
+"B",
+"CI"
+],
+"int(bits[0] ^ bits[1] ^ bits[2])"
+],
+[
+"dummy11",
+[
+"A",
+"B",
+"CI"
+],
+"int((bits[0] and bits[1]) or (bits[2] and (bits[0] ^ bits[1])))"
+],
+[
+"HA_SUM",
+[
+"A",
+"B"
+],
+"int(bits[0] ^ bits[1])"
+],
+[
+"HA_CO",
+[
+"A",
+"B"
+],
+"int(bits[0] and bits[1])"
+],
+[
+"IAN2",
+[
+"A1",
+"B1"
+],
+"int(not(bits[0]) and bits[1])"
+],
+[
+"IAO21",
+[
+"A1",
+"A2",
+"B"
+],
+"int(not((not(bits[0]) and not(bits[1])) or bits[2]))"
+],
+[
+"IAO22",
+[
+"A1",
+"A2",
+"B1",
+"B2"
+],
+"int(not((not(bits[0]) and not(bits[1])) or (bits[2] and bits[3])))"
+],
+[
+"IAOI211",
+[
+"A1",
+"A2",
+"B",
+"C"
+],
+"int(not((not(bits[0]) and bits[1]) or bits[2] or bits[3]))"
+],
+[
+"IAOI21",
+[
+"A1",
+"A2",
+"B"
+],
+"int(not((bits[0] and bits[1]) or (not(bits[2]))))"
+],
+[
+"IBAO21",
+[
+"A1",
+"A2",
+"B"
+],
+"int((bits[0] and bits[1]) or (not(bits[2])))"
+],
+[
+"IBOA21",
+[
+"A1",
+"A2",
+"B"
+],
+"int((bits[0] or bits[1]) and (not(bits[2])))"
+],
+[
+"IIAOI21",
+[
+"A1",
+"A2",
+"B"
+],
+"int(not((not(bits[0]) and bits[1]) or bits[2]))"
+],
+[
+"IIAOI22",
+[
+"A1",
+"A2",
+"B1",
+"B2"
+],
+"int(not((not(bits[0]) and not(bits[1])) or (bits[2] and bits[3])))"
+],
+[
+"IIND3",
+[
+"A1",
+"A2",
+"B1"
+],
+"int(not(not(bits[0]) and not(bits[1]) and bits[2]))"
+],
+[
+"IIND4",
+[
+"A1",
+"A2",
+"B1",
+"B2"
+],
+"int(not(not(bits[0]) and not(bits[1]) and bits[2] and bits[3]))"
+],
+[
+"IINR3",
+[
+"A1",
+"A2",
+"B1"
+],
+"int(not(not(bits[0]) or not(bits[1]) or bits[2]))"
+],
+[
+"IINR4",
+[
+"A1",
+"A2",
+"B1",
+"B2"
+],
+"int(not(not(bits[0]) or not(bits[1]) or bits[2] or bits[3]))"
+],
+[
+"IIOAI21",
+[
+"A1",
+"A2",
+"B"
+],
+"int(not((not(bits[0]) or bits[1]) and bits[2]))"
+],
+[
+"IIOAI22",
+[
+"A1",
+"A2",
+"B1",
+"B2"
+],
+"int(not((not(bits[0]) or not(bits[1])) and (bits[2] or bits[3])))"
+],
+[
+"IND2",
+[
+"A1",
+"B1"
+],
+"int(not(not(bits[0]) and bits[1]))"
+],
+[
+"IND3",
+[
+"A1",
+"B1",
+"B2"
+],
+"int(not(not(bits[0]) and bits[1] and bits[2]))"
+],
+[
+"IND4",
+[
+"A1",
+"B1",
+"B2",
+"B3"
+],
+"int(not(not(bits[0]) and bits[1] and bits[2] and bits[3]))"
+],
+[
+"INR2",
+[
+"A1",
+"B1"
+],
+"int(not(not(bits[0]) or bits[1]))"
+],
+[
+"INR3",
+[
+"A1",
+"B1",
+"B2"
+],
+"int(not(not(bits[0]) or bits[1] or bits[2]))"
+],
+[
+"INR4",
+[
+"A1",
+"B1",
+"B2",
+"B3"
+],
+"int(not(not(bits[0]) or bits[1] or bits[2] or bits[3]))"
+],
+[
+"IOA21",
+[
+"A1",
+"A2",
+"B"
+],
+"int(not((not(bits[0]) or not(bits[1])) and bits[2]))"
+],
+[
+"IOA22",
+[
+"A1",
+"A2",
+"B1",
+"B2"
+],
+"int(not((not(bits[0]) or not(bits[1])) and (bits[2] or bits[3])))"
+],
+[
+"IOAI211",
+[
+"A1",
+"A2",
+"B",
+"C"
+],
+"int(not((not(bits[0]) or bits[1]) and bits[2] and bits[3]))"
+],
+[
+"IOAI21",
+[
+"A1",
+"A2",
+"B"
+],
+"int(not((bits[0] or bits[1]) and not(bits[2])))"
+],
+[
+"IOR2",
+[
+"A1",
+"B1"
+],
+"int(not(bits[0]) or bits[1])"
+],
+[
+"MAOI222",
+[
+"A",
+"B",
+"C"
+],
+"int(not((bits[0] and bits[1]) or (bits[0] and bits[2]) or (bits[1] and bits[2])))"
+],
+[
+"MAOI22",
+[
+"A1",
+"A2",
+"B1",
+"B2"
+],
+"int(not((bits[0] and bits[1]) or (not(bits[2] or bits[3]))))"
+],
+[
+"MOAI22",
+[
+"A1",
+"A2",
+"B1",
+"B2"
+],
+"int(not((bits[0] or bits[1]) and (not(bits[2] and bits[3]))))"
+],
+[
+"MUX3",
+[
+"I0",
+"I1",
+"I2",
+"S0",
+"S1"
+],
+"int((not(bits[3]) and not(bits[4]) and bits[0]) or (bits[3] and (not(bits[4])) and bits[1]) or (bits[4] and bits[2]))"
+],
+[
+"MUX3N",
+[
+"I0",
+"I1",
+"I2",
+"S0",
+"S1"
+],
+"int(not((not(bits[3]) and not(bits[4]) and bits[0]) or (bits[3] and (not(bits[4])) and bits[1]) or (bits[4] and bits[2])))"
+],
+[
+"MUX4",
+[
+"I0",
+"I1",
+"I2",
+"I3",
+"S0",
+"S1"
+],
+"int((not(bits[4]) and not(bits[5]) and bits[0]) or (bits[4] and (not(bits[5])) and bits[1]) or (not(bits[4]) and bits[5] and bits[2]) or (bits[4] and bits[5] and bits[3]))"
+],
+[
+"MUX4N",
+[
+"I0",
+"I1",
+"I2",
+"I3",
+"S0",
+"S1"
+],
+"int(not((not(bits[4]) and not(bits[5]) and bits[0]) or (bits[4] and (not(bits[5])) and bits[1]) or (not(bits[4]) and bits[5] and bits[2]) or (bits[4] and bits[5] and bits[3])))"
+],
+[
+"NAND4",
+[
+"A1",
+"A2",
+"A3",
+"A4"
+],
+"int(not(bits[0] and bits[1] and bits[2] and bits[3]))"
+],
+[
+"NOR4",
+[
+"A1",
+"A2",
+"A3",
+"A4"
+],
+"int(not(bits[0] or bits[1] or bits[2] or bits[3]))"
+],
+[
+"OA211",
+[
+"A1",
+"A2",
+"B",
+"C"
+],
+"int((bits[0] or bits[1]) and bits[2] and bits[3])"
+],
+[
+"OA21",
+[
+"A1",
+"A2",
+"B"
+],
+"int((bits[0] or bits[1]) and bits[2])"
+],
+[
+"OA221",
+[
+"A1",
+"A2",
+"B1",
+"B2",
+"C"
+],
+"int((bits[0] or bits[1]) and (bits[2] or bits[3]) and bits[4])"
+],
+[
+"OA222",
+[
+"A1",
+"A2",
+"B1",
+"B2",
+"C1",
+"C2"
+],
+"int((bits[0] or bits[1]) and (bits[2] or bits[3]) and (bits[4] or bits[5]))"
+],
+[
+"OA22",
+[
+"A1",
+"A2",
+"B1",
+"B2"
+],
+"int((bits[0] or bits[1]) and (bits[2] or bits[3]))"
+],
+[
+"OA31",
+[
+"A1",
+"A2",
+"A3",
+"B"
+],
+"int((bits[0] or bits[1] or bits[2]) and bits[3])"
+],
+[
+"OA32",
+[
+"A1",
+"A2",
+"A3",
+"B1",
+"B2"
+],
+"int((bits[0] or bits[1] or bits[2]) and (bits[3] or bits[4]))"
+],
+[
+"OA33",
+[
+"A1",
+"A2",
+"A3",
+"B1",
+"B2",
+"B3"
+],
+"int((bits[0] or bits[1] or bits[2]) and (bits[3] or bits[4] or bits[5]))"
+],
+[
+"OAI211",
+[
+"A1",
+"A2",
+"B",
+"C"
+],
+"int(not((bits[0] or bits[1]) and bits[2] and bits[3]))"
+],
+[
+"OAI21",
+[
+"A1",
+"A2",
+"B"
+],
+"int(not((bits[0] or bits[1]) and bits[2]))"
+],
+[
+"OAI221",
+[
+"A1",
+"A2",
+"B1",
+"B2",
+"C"
+],
+"int(not((bits[0] or bits[1]) and (bits[2] or bits[3]) and bits[4]))"
+],
+[
+"OAI222",
+[
+"A1",
+"A2",
+"B1",
+"B2",
+"C1",
+"C2"
+],
+"int(not((bits[0] or bits[1]) and (bits[2] or bits[3]) and (bits[4] or bits[5])))"
+],
+[
+"OAI22",
+[
+"A1",
+"A2",
+"B1",
+"B2"
+],
+"int(not((bits[0] or bits[1]) and (bits[2] or bits[3])))"
+],
+[
+"OAI31",
+[
+"A1",
+"A2",
+"A3",
+"B"
+],
+"int(not((bits[0] or bits[1] or bits[2]) and bits[3]))"
+],
+[
+"OAI32",
+[
+"A1",
+"A2",
+"A3",
+"B1",
+"B2"
+],
+"int(not((bits[0] or bits[1] or bits[2]) and (bits[3] or bits[4])))"
+],
+[
+"OAI33",
+[
+"A1",
+"A2",
+"A3",
+"B1",
+"B2",
+"B3"
+],
+"int(not((bits[0] or bits[1] or bits[2]) and (bits[3] or bits[4] or bits[5])))"
+],
+[
+"OAOI211",
+[
+"A1",
+"A2",
+"B",
+"C"
+],
+"int(not(((bits[0] or bits[1]) and bits[2]) or bits[3]))"
+],
+[
+"OR3",
+[
+"A1",
+"A2",
+"A3"
+],
+"int(bits[0] or bits[1] or bits[2])"
+],
+[
+"OR4",
+[
+"A1",
+"A2",
+"A3",
+"A4"
+],
+"int(bits[0] or bits[1] or bits[2] or bits[3])"
+],
+[
+"XNR2",
+[
+"A1",
+"A2"
+],
+"int(not(bits[0] ^ bits[1]))"
+],
+[
+"XNR3",
+[
+"A1",
+"A2",
+"A3"
+],
+"int(not(bits[0] ^ bits[1] ^ bits[2]))"
+],
+[
+"XOR3",
+[
+"A1",
+"A2",
+"A3"
+],
+"int(bits[0] ^ bits[1] ^ bits[2])"
+]
+]
