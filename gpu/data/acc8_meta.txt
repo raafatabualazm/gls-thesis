@@ -1,0 +1,9 @@
+gl0am_unit
+gl0am_event_weighted
+simpart_gamma1024
+simpart_gamma8
+wang_density
+cost_model
+ref_events 117225
+ref_final_sig 35965200
+n_cycle 2000
