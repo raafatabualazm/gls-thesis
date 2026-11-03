@@ -1,0 +1,700 @@
+diff --git a/GL0AM/GL0AM.cupy b/GL0AM/GL0AM.cupy
+index d06dbc2..34c525c 100644
+--- a/GL0AM/GL0AM.cupy
++++ b/GL0AM/GL0AM.cupy
+@@ -1,4 +1,4 @@
+-/*##############################################################################
++###############################################################################
+ # Copyright (c) 2024, NVIDIA Corporation. All rights reserved.
+ #
+ # This work is made available under the "NVIDIA License".
+@@ -7,6 +7,23 @@
+ #
+ ##############################################################################*/
+ 
++# --- CUDA 12 / CuPy 13 port: CuPy 13 puts its bundled (older) cuda_fp16.h first on the nvcc
++# include path; it clashes with the toolkit's cuda_bf16.h and libcudacxx. Force-include the
++# toolkit's own cuda_fp16.h first so the bundled copy is skipped by its include guard.
++import os as _os
++_fp16 = [_os.path.join(d, 'cuda_fp16.h') for d in (_os.path.join(_os.environ.get('CONDA_PREFIX', ''), 'targets/x86_64-linux/include'), _os.path.join(cp.cuda.get_cuda_path() or '', 'include')) if _os.path.isfile(_os.path.join(d, 'cuda_fp16.h'))]
++_GL0AM_CUDA12_OPTS = ('-include', _fp16[0]) if _fp16 else ()
++# CuPy 13 converts non-CuPy index objects through __array__; let CUDA torch tensors used as
++# indices into CuPy arrays (as the CuPy 11 fork accepted) go via host memory instead of raising.
++import torch as _th
++_th_array_orig = _th.Tensor.__array__
++def _th_array_cuda12(self, *a, **kw):
++    return _th_array_orig(self.detach().cpu() if self.is_cuda else self, *a, **kw)
++_th.Tensor.__array__ = _th_array_cuda12
++def _RawKernel12(code, name, *args, **kw):
++    kw['options'] = tuple(kw.get('options', ())) + _GL0AM_CUDA12_OPTS
++    return cp.RawKernel(code, name, *args, **kw)
++
+ kernel_src_code = r'''
+ #include <stdint.h>
+ #include <iostream>
+@@ -30,7 +47,7 @@ thisLevelHowManyEndpoints[i] = totalEndpoints;
+ }  
+ }
+ '''
+-calculateHowManyEndpointsDrivenPerNodeNonUniqueNonSorted=cp.RawKernel(kernel_src_code, 'calculateHowManyEndpointsDrivenPerNodeNonUniqueNonSorted', backend='nvcc')
++calculateHowManyEndpointsDrivenPerNodeNonUniqueNonSorted=_RawKernel12(kernel_src_code, 'calculateHowManyEndpointsDrivenPerNodeNonUniqueNonSorted', backend='nvcc')
+ calculateHowManyEndpointsDrivenPerNodeNonUniqueNonSorted.compile() ;
+ 
+ kernel_src_code = r'''
+@@ -65,7 +82,7 @@ for (int j = 0 ; j < numFanouts ; j ++ ) {
+ }
+ }
+ '''
+-storeTempEndpointsDrivenPerNode=cp.RawKernel(kernel_src_code, 'storeTempEndpointsDrivenPerNode', backend='nvcc')
++storeTempEndpointsDrivenPerNode=_RawKernel12(kernel_src_code, 'storeTempEndpointsDrivenPerNode', backend='nvcc')
+ storeTempEndpointsDrivenPerNode.compile() ;
+ 
+ kernel_src_code = r'''
+@@ -96,7 +113,7 @@ for (int64_t j = beginRead; j < endRead ; j++ ) {
+ }
+ }
+ '''
+-storeEndpointsDrivenPerNodeFinal=cp.RawKernel(kernel_src_code, 'storeEndpointsDrivenPerNodeFinal', backend='nvcc')
++storeEndpointsDrivenPerNodeFinal=_RawKernel12(kernel_src_code, 'storeEndpointsDrivenPerNodeFinal', backend='nvcc')
+ storeEndpointsDrivenPerNodeFinal.compile() ;
+ 
+ kernel_src_code = r'''
+@@ -123,7 +140,7 @@ for (int64_t k = tempDrivenEndpointsPointerPerNodeTracker; k < right; k++) {
+ }
+ }
+ '''
+-calculateDuplicates=cp.RawKernel(kernel_src_code, 'calculateDuplicates', backend='nvcc')
++calculateDuplicates=_RawKernel12(kernel_src_code, 'calculateDuplicates', backend='nvcc')
+ calculateDuplicates.compile() ;
+ 
+ kernel_src_code = r'''
+@@ -147,7 +164,7 @@ perEndpointComparisonResults[i] = listOfEndpointsStorage[targetAddress] == listO
+ }
+ }
+ '''
+-segmentedCompare=cp.RawKernel(kernel_src_code, 'segmentedCompare', backend='nvcc')
++segmentedCompare=_RawKernel12(kernel_src_code, 'segmentedCompare', backend='nvcc')
+ segmentedCompare.compile() ;
+ 
+ kernel_src_code = r'''
+@@ -171,7 +188,7 @@ perEndpointComparisonResults[anchor] =
+ }
+ }
+ '''
+-segmentedCompareReduction=cp.RawKernel(kernel_src_code, 'segmentedCompareReduction', backend='nvcc')
++segmentedCompareReduction=_RawKernel12(kernel_src_code, 'segmentedCompareReduction', backend='nvcc')
+ segmentedCompareReduction.compile() ;
+ 
+ kernel_src_code = r'''
+@@ -200,7 +217,7 @@ for (int j = 0 ; j < howManyFanoutsPerNode[i] ; j++ ) {
+ }
+ }
+ '''
+-assignMatchingClusterIDs=cp.RawKernel(kernel_src_code, 'assignMatchingClusterIDs', backend='nvcc')
++assignMatchingClusterIDs=_RawKernel12(kernel_src_code, 'assignMatchingClusterIDs', backend='nvcc')
+ assignMatchingClusterIDs.compile() ;
+ 
+ kernel_src_code = r'''
+@@ -227,7 +244,7 @@ endpointIDSumsAndHowManyEndpoints[i] = tempSum;
+ }
+ }
+ '''
+-calculateEndpointsAndSumAttribute=cp.RawKernel(kernel_src_code, 'calculateEndpointsAndSumAttribute', backend='nvcc')
++calculateEndpointsAndSumAttribute=_RawKernel12(kernel_src_code, 'calculateEndpointsAndSumAttribute', backend='nvcc')
+ calculateEndpointsAndSumAttribute.compile() ;
+ 
+ kernel_src_code = r'''
+@@ -251,7 +268,7 @@ endpointRanges[i] = tempRange;
+ }
+ }
+ '''
+-calculateRanges=cp.RawKernel(kernel_src_code, 'calculateRanges', backend='nvcc')
++calculateRanges=_RawKernel12(kernel_src_code, 'calculateRanges', backend='nvcc')
+ calculateRanges.compile() ;
+ 
+ kernel_src_code = r'''
+@@ -282,7 +299,7 @@ endpointVariances[i] = covariance/(double(howManyEndpoints-1)) ;
+ }
+ }
+ '''
+-calculateVariances=cp.RawKernel(kernel_src_code, 'calculateVariances', backend='nvcc')
++calculateVariances=_RawKernel12(kernel_src_code, 'calculateVariances', backend='nvcc')
+ calculateVariances.compile() ;
+ 
+ kernel_src_code = r'''
+@@ -310,7 +327,7 @@ if ((howManyEndpoints % 2) == 1) {
+ }
+ }
+ '''
+-calculateMedians=cp.RawKernel(kernel_src_code, 'calculateMedians', backend='nvcc')
++calculateMedians=_RawKernel12(kernel_src_code, 'calculateMedians', backend='nvcc')
+ calculateMedians.compile() ;
+ 
+ kernel_src_code = r'''
+@@ -337,7 +354,7 @@ endpointSkews[i] = skewTemp/(double(howManyEndpoints-1)) ;
+ }
+ }
+ '''
+-calculateSkewness=cp.RawKernel(kernel_src_code, 'calculateSkewness', backend='nvcc')
++calculateSkewness=_RawKernel12(kernel_src_code, 'calculateSkewness', backend='nvcc')
+ calculateSkewness.compile() ;
+ 
+ kernel_src_code = r'''
+@@ -360,7 +377,7 @@ fullComparisonResults[i] = (masterCompareTensor[j] == listOfEndpointsStorage[com
+ }
+ }
+ '''
+-fullComparisonAgainstMasterTensor=cp.RawKernel(kernel_src_code, 'fullComparisonAgainstMasterTensor', backend='nvcc')
++fullComparisonAgainstMasterTensor=_RawKernel12(kernel_src_code, 'fullComparisonAgainstMasterTensor', backend='nvcc')
+ fullComparisonAgainstMasterTensor.compile() ;
+ 
+ kernel_src_code = r'''
+@@ -380,7 +397,7 @@ if ( i < numNodes ) {
+ }
+ }
+ '''
+-writeUniqueClusterIDAttributes=cp.RawKernel(kernel_src_code, 'writeUniqueClusterIDAttributes', backend='nvcc')
++writeUniqueClusterIDAttributes=_RawKernel12(kernel_src_code, 'writeUniqueClusterIDAttributes', backend='nvcc')
+ writeUniqueClusterIDAttributes.compile() ;
+ 
+ kernel_src_code = r'''
+@@ -397,7 +414,7 @@ if ( i < numValues ) {
+ }
+ }
+ '''
+-translateNodeIDToHypergraphNodeID=cp.RawKernel(kernel_src_code, 'translateNodeIDToHypergraphNodeID', backend='nvcc')
++translateNodeIDToHypergraphNodeID=_RawKernel12(kernel_src_code, 'translateNodeIDToHypergraphNodeID', backend='nvcc')
+ translateNodeIDToHypergraphNodeID.compile() ;
+ 
+ kernel_src_code = r'''
+@@ -419,7 +436,7 @@ uniqueClusters1D[i] = listOfEndpointsStorage[readAddress];
+ }
+ }
+ '''
+-storeUniqueClusters1D=cp.RawKernel(kernel_src_code, 'storeUniqueClusters1D', backend='nvcc')
++storeUniqueClusters1D=_RawKernel12(kernel_src_code, 'storeUniqueClusters1D', backend='nvcc')
+ storeUniqueClusters1D.compile() ;
+ 
+ kernel_src_code = r'''
+@@ -439,7 +456,7 @@ uniqueClusters1DHMetisVersion[i] = hypergraphVertexID[uniqueClusters1D[i]];
+ }
+ }
+ '''
+-translateDGLNodesToHMetisNodes=cp.RawKernel(kernel_src_code, 'translateDGLNodesToHMetisNodes', backend='nvcc')
++translateDGLNodesToHMetisNodes=_RawKernel12(kernel_src_code, 'translateDGLNodesToHMetisNodes', backend='nvcc')
+ translateDGLNodesToHMetisNodes.compile() ;
+ 
+ kernel_src_code = r'''
+@@ -507,7 +524,7 @@ if ( i < num_nodes  ) {
+ }
+ }
+ '''
+-updateClockTreeSaif=cp.RawKernel(kernel_src_code, 'updateClockTreeSaif', backend='nvcc')
++updateClockTreeSaif=_RawKernel12(kernel_src_code, 'updateClockTreeSaif', backend='nvcc')
+ updateClockTreeSaif.compile() ;
+ 
+ kernel_src_code = r'''
+@@ -621,7 +638,7 @@ const int stage, const int cycle, const int nodes_size, const int num_splits, co
+   }
+ }
+ '''
+-simulate_seq_stage3d_4val=cp.RawKernel(kernel_src_code, 'simulate_seq_stage3d_4val',backend='nvcc')
++simulate_seq_stage3d_4val=_RawKernel12(kernel_src_code, 'simulate_seq_stage3d_4val',backend='nvcc')
+ simulate_seq_stage3d_4val.compile() ;
+ 
+ 
+@@ -647,7 +664,7 @@ if ( i < numBuffers ) {
+ }
+ }
+ '''
+-simulateClkTreeBuffs=cp.RawKernel(kernel_src_code, 'simulateClkTreeBuffs',backend='nvcc')
++simulateClkTreeBuffs=_RawKernel12(kernel_src_code, 'simulateClkTreeBuffs',backend='nvcc')
+ simulateClkTreeBuffs.compile() ;
+ 
+ kernel_src_code = r'''
+@@ -671,7 +688,7 @@ if ( i < numVCs  ) {
+ }
+ }
+ '''
+-formatWholeInputWaveformsForGATSPISubchunking=cp.RawKernel(kernel_src_code, 'formatWholeInputWaveformsForGATSPISubchunking', backend='nvcc')
++formatWholeInputWaveformsForGATSPISubchunking=_RawKernel12(kernel_src_code, 'formatWholeInputWaveformsForGATSPISubchunking', backend='nvcc')
+ formatWholeInputWaveformsForGATSPISubchunking.compile() ;
+ 
+ kernel_src_code = r'''
+@@ -699,7 +716,7 @@ while (thisOutputWaveformIndex < theOutputWaveformEndIndex ) {
+ }
+ }
+ '''
+-setFullWaveformRegisterPseudoInputsBlockProcess=cp.RawKernel(kernel_src_code, 'setFullWaveformRegisterPseudoInputsBlockProcess', backend='nvcc')
++setFullWaveformRegisterPseudoInputsBlockProcess=_RawKernel12(kernel_src_code, 'setFullWaveformRegisterPseudoInputsBlockProcess', backend='nvcc')
+ setFullWaveformRegisterPseudoInputsBlockProcess.compile() ;
+ 
+ 
+@@ -725,7 +742,7 @@ if ( i < totalTimestampsInWaveform  ) {
+ }
+ }
+ '''
+-getSignalStateAtTimestamp=cp.RawKernel(kernel_src_code, 'getSignalStateAtTimestamp', backend='nvcc')
++getSignalStateAtTimestamp=_RawKernel12(kernel_src_code, 'getSignalStateAtTimestamp', backend='nvcc')
+ getSignalStateAtTimestamp.compile() ;
+ 
+ kernel_src_code = r'''
+@@ -748,7 +765,7 @@ if ( i < totalTimestampsInWaveform  ) {
+ }
+ }
+ '''
+-getVCDIndexesOfSignalInTimerange=cp.RawKernel(kernel_src_code, 'getVCDIndexesOfSignalInTimerange', backend='nvcc')
++getVCDIndexesOfSignalInTimerange=_RawKernel12(kernel_src_code, 'getVCDIndexesOfSignalInTimerange', backend='nvcc')
+ getVCDIndexesOfSignalInTimerange.compile() ;
+ 
+ kernel_src_code = r'''
+@@ -767,7 +784,7 @@ if ( i < totalTimestampsInSubWaveform  ) {
+ }
+ }
+ '''
+-extractTimeAndValue=cp.RawKernel(kernel_src_code, 'extractTimeAndValue', backend='nvcc')
++extractTimeAndValue=_RawKernel12(kernel_src_code, 'extractTimeAndValue', backend='nvcc')
+ extractTimeAndValue.compile() ;
+ 
+ kernel_src_code = r'''
+@@ -796,7 +813,7 @@ while (thisOutputWaveformIndex < theOutputWaveformEndIndex ) {
+ }
+ }
+ '''
+-setFoldedRegisterPseudoInputsBlockProcess=cp.RawKernel(kernel_src_code, 'setFoldedRegisterPseudoInputsBlockProcess', backend='nvcc')
++setFoldedRegisterPseudoInputsBlockProcess=_RawKernel12(kernel_src_code, 'setFoldedRegisterPseudoInputsBlockProcess', backend='nvcc')
+ setFoldedRegisterPseudoInputsBlockProcess.compile() ;
+ 
+ 
+@@ -828,7 +845,7 @@ if ( i < num_of_drivers ) {
+ }
+ }
+ '''
+-setFoldedRegisterWaveformsInitAndEndTokenValues=cp.RawKernel(kernel_src_code, 'setFoldedRegisterWaveformsInitAndEndTokenValues', backend='nvcc')
++setFoldedRegisterWaveformsInitAndEndTokenValues=_RawKernel12(kernel_src_code, 'setFoldedRegisterWaveformsInitAndEndTokenValues', backend='nvcc')
+ setFoldedRegisterWaveformsInitAndEndTokenValues.compile() ;
+ 
+ kernel_src_code = r'''
+@@ -843,7 +860,7 @@ if ( i < num_of_drivers ) {
+ }
+ }
+ '''
+-setIndex_T=cp.RawKernel(kernel_src_code, 'setIndex_T', backend='nvcc')
++setIndex_T=_RawKernel12(kernel_src_code, 'setIndex_T', backend='nvcc')
+ setIndex_T.compile() ;
+ 
+ 
+@@ -885,7 +902,7 @@ if ( i < nodes_size  ) {
+ }
+ }
+ '''
+-writeInputWaveforms=cp.RawKernel(kernel_src_code, 'writeInputWaveforms', backend='nvcc')
++writeInputWaveforms=_RawKernel12(kernel_src_code, 'writeInputWaveforms', backend='nvcc')
+ writeInputWaveforms.compile() ;
+ 
+ kernel_src_code = r'''
+@@ -946,7 +963,7 @@ if ( i < nodes_size  ) {
+ }
+ }
+ '''
+-calculateNumberOfPerSplitSwitches=cp.RawKernel(kernel_src_code, 'calculateNumberOfPerSplitSwitches', backend='nvcc')
++calculateNumberOfPerSplitSwitches=_RawKernel12(kernel_src_code, 'calculateNumberOfPerSplitSwitches', backend='nvcc')
+ calculateNumberOfPerSplitSwitches.compile() ;
+ 
+ kernel_src_code = r'''
+@@ -989,7 +1006,7 @@ if ( i < nodes_size  ) {
+ }
+ }
+ '''
+-writeDriverWaveforms=cp.RawKernel(kernel_src_code, 'writeDriverWaveforms', backend='nvcc')
++writeDriverWaveforms=_RawKernel12(kernel_src_code, 'writeDriverWaveforms', backend='nvcc')
+ writeDriverWaveforms.compile() ;
+ 
+ kernel_src_code = r'''
+@@ -1093,7 +1110,7 @@ if ( i < total_bits ) {
+ }
+ }
+ '''
+-simulate_rams=cp.RawKernel(kernel_src_code, 'simulate_rams', enable_cooperative_groups=True,backend='nvcc')
++simulate_rams=_RawKernel12(kernel_src_code, 'simulate_rams', enable_cooperative_groups=True,backend='nvcc')
+ simulate_rams.compile() ;
+ 
+ kernel_src_code = r'''
+@@ -1116,7 +1133,7 @@ if ( i < nodes_size ) {
+ }
+ }
+ '''
+-map_FOs_to_thread_address=cp.RawKernel(kernel_src_code, 'map_FOs_to_thread_address')
++map_FOs_to_thread_address=_RawKernel12(kernel_src_code, 'map_FOs_to_thread_address')
+ map_FOs_to_thread_address.compile() ;
+ 
+ kernel_src_code = r'''
+@@ -1137,7 +1154,7 @@ if ( i < nodes_size ) {
+ }
+ }
+ '''
+-map_drivers_to_thread_address=cp.RawKernel(kernel_src_code, 'map_drivers_to_thread_address')
++map_drivers_to_thread_address=_RawKernel12(kernel_src_code, 'map_drivers_to_thread_address')
+ map_drivers_to_thread_address.compile() ;
+ 
+ kernel_src_code = r'''
+@@ -1160,7 +1177,7 @@ const int nodes_size, const int graph_nodes_size) {
+   }
+ }
+ '''
+-map_to_new_nodes=cp.RawKernel(kernel_src_code, 'map_to_new_nodes',backend='nvcc')
++map_to_new_nodes=_RawKernel12(kernel_src_code, 'map_to_new_nodes',backend='nvcc')
+ map_to_new_nodes.compile() ;
+ 
+ kernel_src_code = r'''
+@@ -1187,7 +1204,7 @@ const int i = blockIdx.x * blockDim.x + threadIdx.x ;
+ }
+ }
+ '''
+-tie_some_highs=cp.RawKernel(kernel_src_code, 'tie_some_highs',backend='nvcc')
++tie_some_highs=_RawKernel12(kernel_src_code, 'tie_some_highs',backend='nvcc')
+ tie_some_highs.compile() ;
+ 
+ kernel_src_code = r'''
+@@ -1210,7 +1227,7 @@ const int temp_active_timestamps_size) {
+   }
+ }
+ '''
+-figure_out_sync_or_async=cp.RawKernel(kernel_src_code, 'figure_out_sync_or_async')
++figure_out_sync_or_async=_RawKernel12(kernel_src_code, 'figure_out_sync_or_async')
+ figure_out_sync_or_async.compile() ;
+ 
+ 
+@@ -1267,7 +1284,7 @@ if ( i < num_of_drivers ) {
+ }
+ }
+ '''
+-setFoldedRegisterPseudoInputs=cp.RawKernel(kernel_src_code, 'setFoldedRegisterPseudoInputs', backend='nvcc')
++setFoldedRegisterPseudoInputs=_RawKernel12(kernel_src_code, 'setFoldedRegisterPseudoInputs', backend='nvcc')
+ setFoldedRegisterPseudoInputs.compile() ;
+ 
+ 
+@@ -1288,7 +1305,7 @@ if ( i < nodes_size ) {
+ }
+ }
+ '''
+-setPushoutDelays=cp.RawKernel(kernel_src_code, 'setPushoutDelays', backend='nvcc')
++setPushoutDelays=_RawKernel12(kernel_src_code, 'setPushoutDelays', backend='nvcc')
+ setPushoutDelays.compile() ;
+ 
+ 
+@@ -1307,7 +1324,7 @@ const int cycles) {
+   }
+ }
+ '''
+-set_inputs=cp.RawKernel(kernel_src_code, 'set_inputs',backend='nvcc',options = ('-lineinfo',))
++set_inputs=_RawKernel12(kernel_src_code, 'set_inputs',backend='nvcc',options = ('-lineinfo',))
+ set_inputs.compile() ;
+ 
+ 
+@@ -1341,7 +1358,7 @@ const int nodes_size) {
+ }
+ }
+ '''
+-organize_input_addresses_for_seqs=cp.RawKernel(kernel_src_code, 'organize_input_addresses_for_seqs',backend='nvcc')
++organize_input_addresses_for_seqs=_RawKernel12(kernel_src_code, 'organize_input_addresses_for_seqs',backend='nvcc')
+ organize_input_addresses_for_seqs.compile() ;
+ 
+ kernel_src_code = r'''
+@@ -1357,7 +1374,7 @@ const int nodes_size) {
+   }
+ }
+ '''
+-store_previous_states3d=cp.RawKernel(kernel_src_code, 'store_previous_states3d',backend='nvcc')
++store_previous_states3d=_RawKernel12(kernel_src_code, 'store_previous_states3d',backend='nvcc')
+ store_previous_states3d.compile() ;
+ 
+ kernel_src_code = r'''
+@@ -1407,7 +1424,7 @@ while ( edge_position < num_edges_this_stage) {
+ }
+ }
+ '''
+-simulate_reg2combo_interface=cp.RawKernel(kernel_src_code, 'simulate_reg2combo_interface',options=('-lineinfo',), enable_cooperative_groups=True,backend='nvcc')
++simulate_reg2combo_interface=_RawKernel12(kernel_src_code, 'simulate_reg2combo_interface',options=('-lineinfo',), enable_cooperative_groups=True,backend='nvcc')
+ simulate_reg2combo_interface.compile() ;
+ 
+ kernel_src_code = r'''
+@@ -1422,7 +1439,7 @@ if ( i < num_of_timestamps ) {
+ }
+ }
+ '''
+-extract_time_stamps=cp.RawKernel(kernel_src_code, 'extract_time_stamps',backend='nvcc')
++extract_time_stamps=_RawKernel12(kernel_src_code, 'extract_time_stamps',backend='nvcc')
+ extract_time_stamps.compile() ;
+ 
+ kernel_src_code = r'''
+@@ -1448,7 +1465,7 @@ if ( i < num_of_drivers ) {
+ }
+ }
+ '''
+-extractNumOfSwitchesPerDriverPerSplit=cp.RawKernel(kernel_src_code, 'extractNumOfSwitchesPerDriverPerSplit',backend='nvcc')
++extractNumOfSwitchesPerDriverPerSplit=_RawKernel12(kernel_src_code, 'extractNumOfSwitchesPerDriverPerSplit',backend='nvcc')
+ extractNumOfSwitchesPerDriverPerSplit.compile() ;
+ 
+ kernel_src_code = r'''
+@@ -1503,7 +1520,7 @@ if ( i < num_nodes  ) {
+ }
+ }
+ '''
+-calculateT0s=cp.RawKernel(kernel_src_code, 'calculateT0s', backend='nvcc')
++calculateT0s=_RawKernel12(kernel_src_code, 'calculateT0s', backend='nvcc')
+ calculateT0s.compile() ;
+ 
+ kernel_src_code = r'''
+@@ -1563,7 +1580,7 @@ if ( i < num_nodes  ) {
+ }
+ }
+ '''
+-calculateT0sLastSubchunk=cp.RawKernel(kernel_src_code, 'calculateT0sLastSubchunk', backend='nvcc')
++calculateT0sLastSubchunk=_RawKernel12(kernel_src_code, 'calculateT0sLastSubchunk', backend='nvcc')
+ calculateT0sLastSubchunk.compile() ;
+ 
+ kernel_src_code = r'''
+@@ -1601,7 +1618,7 @@ if ( i < nodes_size  ) {
+ }
+ }
+ '''
+-getCondValues=cp.RawKernel(kernel_src_code, 'getCondValues', backend='nvcc')
++getCondValues=_RawKernel12(kernel_src_code, 'getCondValues', backend='nvcc')
+ getCondValues.compile() ;
+ 
+ kernel_src_code = r'''
+@@ -1661,7 +1678,7 @@ if ( i < num_nodes  ) {
+ }
+ }
+ '''
+-reconstructWholeWaveforms=cp.RawKernel(kernel_src_code, 'reconstructWholeWaveforms', backend='nvcc')
++reconstructWholeWaveforms=_RawKernel12(kernel_src_code, 'reconstructWholeWaveforms', backend='nvcc')
+ reconstructWholeWaveforms.compile() ;
+ 
+ kernel_src_code = r'''
+@@ -1726,7 +1743,7 @@ if ( i < num_nodes  ) {
+ }
+ }
+ '''
+-getSAIFForTimestampRegion=cp.RawKernel(kernel_src_code, 'getSAIFForTimestampRegion', backend='nvcc')
++getSAIFForTimestampRegion=_RawKernel12(kernel_src_code, 'getSAIFForTimestampRegion', backend='nvcc')
+ getSAIFForTimestampRegion.compile() ;
+ 
+ 
+@@ -1857,7 +1874,7 @@ if ( i < nodes_size  ) {
+ }
+ }
+ '''
+-simulate_gate_TC=cp.RawKernel(kernel_src_code, 'simulate_gate_TC', backend='nvcc')
++simulate_gate_TC=_RawKernel12(kernel_src_code, 'simulate_gate_TC', backend='nvcc')
+ simulate_gate_TC.compile() ;
+ 
+ kernel_src_code = r'''
+@@ -1986,7 +2003,7 @@ if ( i < nodes_size  ) {
+ }
+ }
+ '''
+-simulate_gate_GATSPI=cp.RawKernel(kernel_src_code, 'simulate_gate_GATSPI', options=('-lineinfo',), backend='nvcc')
++simulate_gate_GATSPI=_RawKernel12(kernel_src_code, 'simulate_gate_GATSPI', options=('-lineinfo',), backend='nvcc')
+ simulate_gate_GATSPI.compile() ;
+ 
+ 
+@@ -2029,7 +2046,7 @@ if ( i<num_nodes_this_stage  ) {
+ }
+ }
+ '''
+-simulate_reg2combo_interfaceBlockSync=cp.RawKernel(kernel_src_code, 'simulate_reg2combo_interfaceBlockSync',backend='nvcc', options=('-lineinfo',))
++simulate_reg2combo_interfaceBlockSync=_RawKernel12(kernel_src_code, 'simulate_reg2combo_interfaceBlockSync',backend='nvcc', options=('-lineinfo',))
+ simulate_reg2combo_interfaceBlockSync.compile() ;
+ 
+ kernel_src_code = r'''
+@@ -2101,7 +2118,7 @@ for (int stage=1; stage < total_stages; stage++) {
+ }
+ }
+ '''
+-simulate_stage3dBlockSync=cp.RawKernel(kernel_src_code, 'simulate_stage3dBlockSync', options=('-lineinfo',),backend='nvcc')
++simulate_stage3dBlockSync=_RawKernel12(kernel_src_code, 'simulate_stage3dBlockSync', options=('-lineinfo',),backend='nvcc')
+ simulate_stage3dBlockSync.compile(log_stream=sys.stdout) ;
+ 
+ kernel_src_code = r'''
+@@ -2117,7 +2134,7 @@ if ( i < numClocks ) {
+ }
+ } 
+ '''
+-setClocks=cp.RawKernel(kernel_src_code, 'setClocks', options=('-lineinfo',),backend='nvcc')
++setClocks=_RawKernel12(kernel_src_code, 'setClocks', options=('-lineinfo',),backend='nvcc')
+ setClocks.compile(log_stream=sys.stdout) ;
+ 
+ kernel_src_code = r'''
+@@ -2130,7 +2147,7 @@ if ( i < theres_an_eventShape0 ) {
+ }
+ }
+ '''
+-zeroOut=cp.RawKernel(kernel_src_code, 'zeroOut', options=('-lineinfo',),backend='nvcc')
++zeroOut=_RawKernel12(kernel_src_code, 'zeroOut', options=('-lineinfo',),backend='nvcc')
+ zeroOut.compile(log_stream=sys.stdout) ;
+ 
+ 
+@@ -2173,7 +2190,7 @@ const int change_list_size, const int nodes_size) {
+   }
+ }
+ '''
+-set_input_array=cp.RawKernel(kernel_src_code, 'set_input_array', backend='nvcc')
++set_input_array=_RawKernel12(kernel_src_code, 'set_input_array', backend='nvcc')
+ set_input_array.compile() ;
+ 
+ kernel_src_code = r'''
+@@ -2281,7 +2298,7 @@ if (previousValue != newValue) {
+ }
+ }
+ '''
+-simulateSequentialStage=cp.RawKernel(kernel_src_code, 'simulateSequentialStage',backend='nvcc', options = ('-lineinfo',))
++simulateSequentialStage=_RawKernel12(kernel_src_code, 'simulateSequentialStage',backend='nvcc', options = ('-lineinfo',))
+ simulateSequentialStage.compile() ;
+ 
+ 
+@@ -2301,7 +2318,7 @@ if ( i < elements ) {
+ }
+ }
+ '''
+-createCompactOutTables=cp.RawKernel(kernel_src_code, 'createCompactOutTables',backend='nvcc')
++createCompactOutTables=_RawKernel12(kernel_src_code, 'createCompactOutTables',backend='nvcc')
+ createCompactOutTables.compile() ;
+ 
+ 
+@@ -2315,7 +2332,7 @@ if ( i < theres_an_eventShape0 ) {
+ }
+ }
+ '''
+-zeroOutConstantMemory=cp.RawKernel(kernel_src_code, 'zeroOutConstantMemory', options=('-lineinfo',),backend='nvcc')
++zeroOutConstantMemory=_RawKernel12(kernel_src_code, 'zeroOutConstantMemory', options=('-lineinfo',),backend='nvcc')
+ zeroOutConstantMemory.compile(log_stream=sys.stdout) ;
+ 
+ 
+@@ -2482,7 +2499,7 @@ if ( i < num_nodes  ) {
+ }
+ }
+ '''
+-calculateSAIF=cp.RawKernel(kernel_src_code, 'calculateSAIF', backend='nvcc')
++calculateSAIF=_RawKernel12(kernel_src_code, 'calculateSAIF', backend='nvcc')
+ calculateSAIF.compile() ;
+ 
+ kernel_src_code = r'''
+@@ -2539,7 +2556,7 @@ if ( i < num_nodes  ) {
+ }
+ }
+ '''
+-calculateSAIFLastSubchunk=cp.RawKernel(kernel_src_code, 'calculateSAIFLastSubchunk', backend='nvcc')
++calculateSAIFLastSubchunk=_RawKernel12(kernel_src_code, 'calculateSAIFLastSubchunk', backend='nvcc')
+ calculateSAIFLastSubchunk.compile() ;
+ 
+ kernel_src_code = r'''
+@@ -2595,7 +2612,7 @@ if (polarityToSrc[i]) {
+ }
+ }
+ '''
+-adjustClkTreeSAIFLastSubchunk=cp.RawKernel(kernel_src_code, 'adjustClkTreeSAIFLastSubchunk', backend='nvcc')
++adjustClkTreeSAIFLastSubchunk=_RawKernel12(kernel_src_code, 'adjustClkTreeSAIFLastSubchunk', backend='nvcc')
+ adjustClkTreeSAIFLastSubchunk.compile() ;
+ 
+ kernel_src_code = r'''
+@@ -2648,5 +2665,5 @@ if (polarityToSrc[i]) {
+ }
+ }
+ '''
+-adjustClkTreeSAIF=cp.RawKernel(kernel_src_code, 'adjustClkTreeSAIF', backend='nvcc')
++adjustClkTreeSAIF=_RawKernel12(kernel_src_code, 'adjustClkTreeSAIF', backend='nvcc')
+ adjustClkTreeSAIF.compile() ;
+diff --git a/GL0AM/GL0AM.partitioningSetup.py b/GL0AM/GL0AM.partitioningSetup.py
+index 0596c1b..cb3902f 100644
+--- a/GL0AM/GL0AM.partitioningSetup.py
++++ b/GL0AM/GL0AM.partitioningSetup.py
+@@ -27,6 +27,13 @@ import cupyx
+ 
+ exec(open('GL0AM.cupy').read())
+ 
++def _segmented_sort(vals, offsets):
++  # CUDA 12 port: cupyx.segmented_sort exists only in the CuPy 11.0.0b2 fork.
++  # offsets = [seg starts..., total]; sort ascending within each segment.
++  seg = cp.repeat(cp.arange(offsets.size - 1, dtype=cp.int32), cp.diff(offsets).get().tolist())
++  return vals[cp.lexsort(cp.stack((vals, seg)))]
++
++
+ parser = argparse.ArgumentParser()
+ parser.add_argument('--block', type=str)
+ parser.add_argument('--graph4', type=str, help='the max FO constraint processed combo DGL graph')
+@@ -78,7 +85,7 @@ for level in range(1,len(fromEndpointsToSrc)):
+   storeTempEndpointsDrivenPerNode( (math.ceil(thisLevelOfNodes.size()[0]/512),1), (512,1),\
+    (howManyFanoutsPerNode,loadBreakpointsPerNode,endpointsDrivenByEachLoad,thisLevelHowManyEndpoints,listOfEndpointsStorage,\
+    tempDrivenEndpointsPointerPerNode,endpointsDrivenByEachLoadPointer,tempEndpointsStorage,thisLevelOfNodes.size()[0]) )
+-  tempEndpointsStorage = cupyx.segmented_sort(tempEndpointsStorage,offsets)
++  tempEndpointsStorage = _segmented_sort(tempEndpointsStorage,offsets)
+   calculateDuplicates( (math.ceil(thisLevelOfNodes.size()[0]/512),1), (512,1),\
+    (thisLevelHowManyEndpoints,tempDrivenEndpointsPointerPerNode,tempEndpointsStorage,numDuplicatesPerNode,thisLevelOfNodes.size()[0]) )
+   thisLevelHowManyEndpointsFinal = thisLevelHowManyEndpoints - numDuplicatesPerNode ;
+@@ -109,7 +116,7 @@ print("traverse cones step checker:")
+ for targetFanouts in range(1,bg.ndata['howManyEndpoints'].max()+1):
+   if  th.where(bg.ndata['howManyEndpoints'] == targetFanouts)[0].size()[0]:
+     debugNode = th.where(bg.ndata['howManyEndpoints'] == targetFanouts)[0][0]  
+-    experimentFanouts = listOfEndpointsStorage[bg.ndata['endpointsStoragePointer'][debugNode]:bg.ndata['endpointsStoragePointer'][debugNode]+ targetFanouts]
++    experimentFanouts = listOfEndpointsStorage[int(bg.ndata['endpointsStoragePointer'][debugNode]):int(bg.ndata['endpointsStoragePointer'][debugNode]+ targetFanouts)]
+     sub0, dummy =dgl.khop_out_subgraph(bg,debugNode,len(topo_nodes_cpu),relabel_nodes=True,store_ids=True,output_device=device)
+     goldenFanouts = cp.asarray(th.sort(sub0.ndata['_ID'][th.where(sub0.out_degrees() == 0)[0]])[0]).astype(cp.int32)
+     result = cp.all(goldenFanouts == experimentFanouts)
+@@ -259,7 +266,7 @@ for level in range(1,len(fromEndpointsToSrc)):
+             level5SubNodes = level4SubNodes[th.cuda.LongTensor(level5SubClusterIndexes)] ; masterNode = level5SubNodes[0] ;
+             #full compare here, report assertion and exit if false!
+             masterCompareNumEndpoints = int(bg.ndata['howManyEndpoints'][masterNode])
+-            masterCompareTensor = listOfEndpointsStorage[bg.ndata['endpointsStoragePointer'][masterNode]:bg.ndata['endpointsStoragePointer'][masterNode] + 	masterCompareNumEndpoints].repeat(1)
++            masterCompareTensor = listOfEndpointsStorage[int(bg.ndata['endpointsStoragePointer'][masterNode]):int(bg.ndata['endpointsStoragePointer'][masterNode] + 	masterCompareNumEndpoints)].repeat(1)
+             comparisonPointers = cp.asarray(bg.ndata['endpointsStoragePointer'][level5SubNodes[1:]])
+             numCompareElements = (level5SubNodes.size()[0]-1) * masterCompareNumEndpoints
+             fullComparisonResults= cp.zeros(numCompareElements, dtype=cp.int8)
+@@ -295,11 +302,11 @@ unique_counts = th.unique(counts)
+ for thisCount in unique_counts:
+   debugCluster = th.where(bg.ndata['clusterID'] ==  values[th.where(counts==thisCount)[0]][0])[0]
+   goldenNode = debugCluster[0];
+-  goldenFanouts = listOfEndpointsStorage[bg.ndata['endpointsStoragePointer'][goldenNode]:bg.ndata['endpointsStoragePointer'][goldenNode]+\
+-   bg.ndata['howManyEndpoints'][goldenNode].type(th.int64)]
++  goldenFanouts = listOfEndpointsStorage[int(bg.ndata['endpointsStoragePointer'][goldenNode]):int(bg.ndata['endpointsStoragePointer'][goldenNode]+\
++   bg.ndata['howManyEndpoints'][goldenNode].type(th.int64))]
+   for thisNode in debugCluster[1:]:
+-    compareFanouts = listOfEndpointsStorage[bg.ndata['endpointsStoragePointer'][thisNode]:bg.ndata['endpointsStoragePointer'][thisNode]+\
+-   bg.ndata['howManyEndpoints'][thisNode].type(th.int64)]
++    compareFanouts = listOfEndpointsStorage[int(bg.ndata['endpointsStoragePointer'][thisNode]):int(bg.ndata['endpointsStoragePointer'][thisNode]+\
++   bg.ndata['howManyEndpoints'][thisNode].type(th.int64))]
+     if cp.all(goldenFanouts == compareFanouts) != True:
+       print("error on " + str(goldenNode) + 'and ' + str(thisNode) + '! Exiting...') ; outerLoopBreaker=1;  break
+   if outerLoopBreaker:
+diff --git a/GL0AM/GL0AM.runSim.py b/GL0AM/GL0AM.runSim.py
+index 8ceff12..68ff470 100644
+--- a/GL0AM/GL0AM.runSim.py
++++ b/GL0AM/GL0AM.runSim.py
+@@ -459,7 +459,7 @@ bg.ndata['waveform_end'][node_nums] = waveforms_pointers[1:].view(len(node_nums)
+ #right now, I'm assuming there is one clock that is single phase, which may have 1 or more clock input ports
+ #should make some event-based timestamp streaming for future work.
+ clk_node_num = cell_names[args.clk[0][0]]
+-temp_active_timestamps = waveforms_total[bg.ndata['waveform_start'][clk_node_num]:bg.ndata['waveform_end'][clk_node_num]][:-1][1::2]
++temp_active_timestamps = waveforms_total[int(bg.ndata['waveform_start'][clk_node_num]):int(bg.ndata['waveform_end'][clk_node_num])][:-1][1::2]
+ final_end = temp_active_timestamps[-1:]+args.period
+ first_edge_init = th.LongTensor([0]) 
+ temp_active_timestamps = th.cat( ( first_edge_init, temp_active_timestamps, final_end ) )
+@@ -470,7 +470,7 @@ sync_or_async_event[0]=1
+ if args.rst[1][0] != '':
+   for this_async_signal in args.rst[1]:
+     rst_node_num = cell_names[this_async_signal]
+-    temp_rst_timestamps = waveforms_total[bg.ndata['waveform_start'][rst_node_num]:bg.ndata['waveform_end'][rst_node_num]][:-1]
++    temp_rst_timestamps = waveforms_total[int(bg.ndata['waveform_start'][rst_node_num]):int(bg.ndata['waveform_end'][rst_node_num])][:-1]
+     temp_active_timestamps = th.cat( ( temp_active_timestamps, temp_rst_timestamps ) )
+     sync_or_async_event = th.cat( (sync_or_async_event,th.ones(temp_rst_timestamps.size()[0], dtype = th.bool) ))
+   temp_active_timestamps, sorted_indexes = temp_active_timestamps.sort()
+@@ -944,7 +944,7 @@ maxPartitionStages +=1
+ #need to set constant memory items for per_part_stage_offsets 
+ simulateLogicCode = simulateLogicCode.replace("PARTS", f"{len(per_part_stage_offsets)}")
+ simulateLogicCode = simulateLogicCode.replace("LOGIC_LENGTH", f"{compactOutTables.shape[0]}")
+-simulateLogicModule = cp.RawModule(code=simulateLogicCode, options=('-lineinfo',),backend='nvcc')
++simulateLogicModule = cp.RawModule(code=simulateLogicCode, options=('-lineinfo',)+_GL0AM_CUDA12_OPTS,backend='nvcc')
+ simulate_stage3dBlockSyncConstantMemory = simulateLogicModule.get_function("simulate_stage3dBlockSyncConstantMemory")
+ simulate_stage3dBlockSyncConstantMemory.max_dynamic_shared_size_bytes = 49152*2
+ #simulate_stage3dBlockSyncConstantMemory.preferred_shared_memory_carveout =75
