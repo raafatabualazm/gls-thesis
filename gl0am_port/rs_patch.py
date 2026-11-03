@@ -17,4 +17,8 @@ if 'GL0AM_ZD_STORAGE' not in s:
         "if os.environ.get('GL0AM_INIT_SEQ_ZERO'): saveRegisterWaveformsTotal[perDriverPerSplitPointersBegin[:numOfRegisters,0]] = 0")
     rep("  update_saif()" + nl, "  update_saif()" + nl +
         "  if os.environ.get('GL0AM_DUMP_WAVES'): np.savez_compressed(os.environ['GL0AM_DUMP_WAVES'] + '_' + str(subchunk_id) + '.npz', w=new_waveforms_total[0:append_length].get(), s=bg.ndata['waveform_start'].cpu().numpy(), e=bg.ndata['waveform_end'].cpu().numpy()) #cuda12-port: waveform dump for validation" + nl)
+if 'GL0AM_DUMP_REGS' not in s:
+    rep("#print('total inputs saved: ' + str(saveRegisterWaveformsTotal.shape[0]))",
+        "#print('total inputs saved: ' + str(saveRegisterWaveformsTotal.shape[0]))" + nl +
+        "if os.environ.get('GL0AM_DUMP_REGS'): np.savez_compressed(os.environ['GL0AM_DUMP_REGS'], w=cp.asnumpy(saveRegisterWaveformsTotal), p=cp.asnumpy(saveRegisterPointers), n=cp.asnumpy(nodes_list_gpu_seqs), nsw=cp.asnumpy(numOfSwitchesPerDriverPerSplit), b=cp.asnumpy(perDriverPerSplitPointersBegin), zs=int(zeroDelaySplits), zf=int(zeroDelayFoldSplit)) #cuda12-port: debug dump")
 open(p, 'w', newline='').write(s); print('patched', p)

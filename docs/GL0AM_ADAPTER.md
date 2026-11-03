@@ -16,11 +16,31 @@ inversion (fewest inserted INVs). Decomposed (no direct match):
 (MSB-first), but kernels index by value*3^(x-1). So cells_list pin j of an n-pin cell gets edge x = n-j;
 delay-LUT mask bit = n-1-j. Flop pins are not reversed (D=1 ... CP=7).
 
+## Decomposition timing (exact for single-output inertial cells)
+The inserted H gate (AND2) and inserted INVs have **zero delay**; the original cell's arc delay is put on the
+H->core edge (and on the core's other edges). Every original input therefore reaches the core at its real time,
+which reproduces one inertial assign per output. (The first version put the delay on the H inputs; when A3 fell
+before the delayed H rose, the a311o output rose 88 ps late in acc8 - fixed.)
+
+## GL0AM bug found: zero-delay fold boundaries must be clock-aligned
+runSim bins zero-delay register events into 80 folds of ceil(duration/80) ps and
+`setFullWaveformRegisterPseudoInputsBlockProcess` assumes the event buffer is ordered by fold. Events from
+one clock edge are appended in cycle order but binned by edge+clk->Q pushout, so when a fold boundary lies
+between edge+pushout of two flops, events land in the wrong fold, a slot keeps its cp.zeros value
+(time 0), and `calculateNumberOfPerSplitSwitches` then restarts the waveform -> register switches dropped,
+end-token X at the next split (gcd: X from 55 ns). Workaround in our inputs (no kernel change):
+choose `--duration` = 80*period*m so folds are period-aligned and edges+pushouts never straddle
+(gcd 400000, acc8 10400000). Not fixed in the kernels.
+
 ## Approximations
-- Edges into inserted H gates carry unconditional arcs; H->G edge is zero delay; inserted INVs are zero delay.
 - Clock-tree insertion delay is folded into the flop pushout.
 - Flops initialised to 0 (GL0AM_INIT_SEQ_ZERO) instead of X.
 
-## Results (laptop, 2026-11-03 ~14:00 Africa/Cairo, UTC+2)
-See results/gl0am_cmp_*.json. acc8: 7/140 nets differ (glitch timing), SAIF TC exact on 133/140.
-gcd: flops and PIs match Icarus exactly; 77/288 comb nets go X in GL0AM re-sim from t=55000 ps (open issue).
+## Results (laptop RTX 3060 6 GB, 3 Nov 2026, Africa/Cairo UTC+2)
+results/gl0am_cmp_{gcd,acc8}.json, warmup 5 ns, Icarus with the same uniform SDF:
+- gcd: 0/288 nets differ, 1892/1892 edges, SAIF TC exact 288/288.
+- acc8: 0/140 nets differ, 178815/178815 edges, SAIF TC exact 140/140.
+- GL0AM's SAIF equals its own dumped waveforms on every net.
+- SAIF T0/T1/TX differ on some nets only by the start-up interval: Icarus holds X until the first evaluation
+  and reset; GL0AM flops start at 0 (GL0AM_INIT_SEQ_ZERO). With warmup 0/1/2 ns there are 86/14/0 (acc8) and
+  235/45/30 (gcd) differing nets; from 5 ns on, none.

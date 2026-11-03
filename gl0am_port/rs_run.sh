@@ -31,11 +31,11 @@ open(f'{b}.hgr.part.{k}','w').write('\n'.join(map(str,bl))+'\n')
 print('kahypar verts',nv,'nets',ne)
 P
  /usr/bin/time -f "partitioningPostprocessing wall_s=%e" python $S/GL0AM.partitioningPostprocessing.py --block $b --graph2 ${b}_update_DGLGraph --graph3 ${b}_sram_DGLGraph --graph4 ${b}_combo_DGLGraph --hMetisResults $b.hgr.part.$K --partitions $K --graphPrecompile ${b}_GraphPrecompile.pkl.gz --graph ${b}_fullSDF_DGLGraph 2>&1 | tail -2
- GL0AM_DUMP_WAVES=$R/${b}_waves /usr/bin/time -f "runSim wall_s=%e maxrss_kB=%M" python $S/GL0AM.runSim.py --block $b --instance_name $b --testname $b --cycles 1 --period $per --input_trace_file $b.waveforms.pkl.gz --graphPrecompile ${b}_GraphPrecompile.pkl.gz --graph ${b}_fullSDF_DGLGraph --graph2 ${b}_update_DGLGraph --graph3 ${b}_sram_DGLGraph --graph4 ${b}_combo_DGLGraph --timescale 1 --pin_net_file $b.pin_net --num_splits 32 --duration $dur --clk clk --first_edge $fe --num_of_sub_chunks 1 --zeroDelayReportSignals $rep --clkTreeFile $b.clkTree --partitionsFile $b.$K.partitions > ${b}_runSim.log 2>&1
+ GL0AM_DUMP_WAVES=$R/${b}_waves GL0AM_DUMP_REGS=$R/${b}_regs.npz /usr/bin/time -f "runSim wall_s=%e maxrss_kB=%M" python $S/GL0AM.runSim.py --block $b --instance_name $b --testname $b --cycles 1 --period $per --input_trace_file $b.waveforms.pkl.gz --graphPrecompile ${b}_GraphPrecompile.pkl.gz --graph ${b}_fullSDF_DGLGraph --graph2 ${b}_update_DGLGraph --graph3 ${b}_sram_DGLGraph --graph4 ${b}_combo_DGLGraph --timescale 1 --pin_net_file $b.pin_net --num_splits 32 --duration $dur --clk clk --first_edge $fe --num_of_sub_chunks 1 --zeroDelayReportSignals $rep --clkTreeFile $b.clkTree --partitionsFile $b.$K.partitions > ${b}_runSim.log 2>&1
  echo "runSim exit=$?"; grep -v "note:\|cells processed" ${b}_runSim.log | tail -40
  ls -la outGL0AM.$b.saif.gz ${b}_waves_0.npz 2>&1
 }
-run gcd 135000 5000 2500 "resp_msg[15:0]"
-run acc8 10015000 5000 2500 "acc[7:0]"
+run gcd 400000 5000 2500 "resp_msg[15:0]"
+[ -z "$ONLY" ] && run acc8 10400000 5000 2500 "acc[7:0]"
 nvidia-smi --query-gpu=name,memory.total --format=csv,noheader
-cd $R && tar czf "/mnt/c/Users/Raafat Abualazm/gls-work/gl0am_out2.tgz" outGL0AM.*.saif.gz *_waves_0.npz *_runSim.log 2>/dev/null; echo done
+cd $R && tar czf "/mnt/c/Users/Raafat Abualazm/gls-work/gl0am_out2.tgz" outGL0AM.*.saif.gz *_waves_0.npz *_regs.npz *_runSim.log 2>/dev/null; echo done

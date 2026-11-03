@@ -92,16 +92,18 @@ def stats(ev):
         if prev_v in '01' and v in '01' and v != prev_v: tc += 1
         prev_t, prev_v = t, v
     return t0, t1, tx, tc
-tc_exact = t1_exact = cmp_n = 0; tc_ic = tc_gl = 0; worst = []
+tc_exact = t1_exact = cmp_n = self_ok = t0_exact = t1x_exact = 0; t1x = []; tc_ic = tc_gl = 0; worst = []
 for n in net_node:
     nm = d.netname.get(n)
     if nm not in saif: continue
     i = [(t, v) for t, v in ich.get(f'n{n}', [])]
     st = stats(i); g = saif[nm]; cmp_n += 1; tc_ic += st[3]; tc_gl += g[3]
-    tc_exact += (st[3] == g[3]); t1_exact += (st[1] == g[1])
+    tc_exact += (st[3] == g[3]); t0_exact += (st[0] == g[0]); t1x_exact += (st[1] + st[2] == g[1] + g[2]); t1_exact += (st[1] == g[1])
     worst.append((abs(st[3] - g[3]), nm, st, g))
+    gs = stats(gl_wave(net_node[n])); self_ok += (tuple(gs) == tuple(g))
+    if st[1] != g[1] and len(t1x) < 3: t1x.append({'net': nm, 'icarus': st, 'gl0am_saif': g, 'gl0am_wave': gs})
 worst.sort(reverse=True)
-res['saif'] = {'nets_compared': cmp_n, 'TC_exact_match': tc_exact, 'T1_exact_match': t1_exact, 'TC_total_icarus': tc_ic, 'TC_total_gl0am': tc_gl,
+res['saif'] = {'nets_compared': cmp_n, 'TC_exact_match': tc_exact, 'T1_exact_match': t1_exact, 'T0_exact_match': t0_exact, 'T1_plus_TX_exact_match': t1x_exact, 'TC_total_icarus': tc_ic, 'TC_total_gl0am': tc_gl, 'gl0am_saif_equals_own_waves': self_ok, 'T1_mismatch_examples': t1x,
                'worst_TC': [{'net': w[1], 'icarus(T0,T1,TX,TC)': w[2], 'gl0am(T0,T1,TX,TC)': w[3]} for w in worst[:4]]}
 json.dump(res, open(f'{od}/{top}_gl0am_compare.json', 'w'), indent=1, default=str)
 print(json.dumps(res, indent=1, default=str))
@@ -110,3 +112,36 @@ if os.environ.get('DBG'):
         if c.is_seq:
             n = c.conn['Q']; print('FF', c.name, d.netname[n], 'GL', gl_wave(net_node[n])[:8], 'IC', ich.get(f'n{n}', [])[:8])
     for b in d.inputs[:6]: print('PI', d.netname[b], 'GL', gl_wave(net_node[b])[:6], 'IC', ich.get(f'n{b}', [])[:6])
+if os.environ.get('DBGX'):
+    drv = {}
+    for c in d.cells:
+        for op in out_pins(c):
+            n = c.conn.get(op)
+            if n is not None and not isinstance(n, tuple): drv[n] = (c.name, c.type, {p: d.netname.get(v, v) for p, v in c.conn.items()})
+    xs = []
+    for n, node in net_node.items():
+        g = gl_wave(node); t = [tt for tt, v in g if v == 'x' and tt > 0]
+        if t: xs.append((min(t), d.netname.get(n, n), drv.get(n)))
+    for r in sorted(xs, key=lambda r: r[0])[:12]: print('X', r, file=sys.stderr)
+if os.environ.get('DBGD'):
+    drv = {}
+    for c in d.cells:
+        for op in out_pins(c):
+            n = c.conn.get(op)
+            if n is not None and not isinstance(n, tuple): drv[n] = (c.name, c.type, {p: d.netname.get(v, v) for p, v in c.conn.items()})
+    rows = []
+    for n, node in net_node.items():
+        g = after(gl_wave(node), a.warmup); i = []
+        for t, v in after(ich.get(f'n{n}', []), a.warmup):
+            if i and i[-1][1] == v: continue
+            i.append((t, v))
+        if g == i: continue
+        k = next((j for j in range(min(len(g), len(i))) if g[j] != i[j]), min(len(g), len(i)))
+        rows.append((min(g[k][0] if k < len(g) else 1e18, i[k][0] if k < len(i) else 1e18), d.netname.get(n, n), g[max(0,k-2):k+3], i[max(0,k-2):k+3], drv.get(n)))
+    for r in sorted(rows, key=lambda r: r[0]): print('D', r, file=sys.stderr)
+if os.environ.get('DBGN'):
+    t0, t1 = map(int, os.environ['DBGW'].split(','))
+    rn = {v: k for k, v in d.netname.items()}
+    for nm in os.environ['DBGN'].split(','):
+        n = rn.get(nm, nm)
+        print('N', nm, 'IC', [(t, v) for t, v in ich.get(f'n{n}', []) if t0 <= t <= t1], 'GL', [(t, v) for t, v in gl_wave(net_node[n]) if t0 <= t <= t1] if n in net_node else None, file=sys.stderr)

@@ -191,9 +191,9 @@ class Exporter:
                 H = m['H']; k = len(H['pins'])
                 for j, hp in enumerate(H['pins']):
                     s = src_of(c.conn.get(hp)); s = gnd if s is None else s
-                    r = self._arc(c, hp, op, True, {}); f = self._arc(c, hp, op, False, {})   # unconditional (max) arcs
-                    if not H['h_rises_out']: r, f = f, r
-                    edge(s, hn, k - j, kind, add_row([r] * (1 << k), [f] * (1 << k)))
+                    # H is evaluated with zero delay; the cell's arc delay sits on the H->core edge, so all
+                    # original inputs reach the core at their real times (matches one inertial assign per output)
+                    edge(s, hn, k - j, kind, 0)
             for j, (sp_, inv) in enumerate(m['src']):
                 if sp_ == '~h':
                     s = hn
@@ -206,11 +206,13 @@ class Exporter:
                     for k_, (pk, ik) in enumerate(m['src']): iv[pk] = ((mask >> (n - 1 - k_)) & 1) ^ int(ik)
                     if '~h' in iv:
                         for hp in m['H']['pins']: iv[hp] = iv['~h']
-                    if sp_ == '~h': r = f = 0.0
+                    if sp_ == '~h':
+                        r = min(self._arc(c, hp, op, True, iv) for hp in m['H']['pins'])
+                        f = min(self._arc(c, hp, op, False, iv) for hp in m['H']['pins'])
                     else: r = self._arc(c, sp_, op, True, iv); f = self._arc(c, sp_, op, False, iv)
                     if m['post_inv']: r, f = f, r
                     rise.append(r); fall.append(f)
-                row = add_row(rise, fall) if sp_ != '~h' else 0
+                row = add_row(rise, fall)
                 if inv:
                     edge(s, pre[j], 1, kind, 0); edge(pre[j], core, n - j, kind, row)
                 else:
