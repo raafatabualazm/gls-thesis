@@ -11,6 +11,7 @@ export CUDA_PATH=$CONDA_PREFIX CUDA_HOME=$CONDA_PREFIX
 nvcc --version | tail -2; $CC --version | head -1
 python -c "import torch" 2>/dev/null || pip install torch==2.2.0 --index-url https://download.pytorch.org/whl/cu118 || exit 1
 python -c "import dgl" 2>/dev/null || pip install dgl==2.0.0 -f https://data.dgl.ai/wheels/cu118/repo.html || exit 1
+pip install "setuptools<70" "torchdata<0.8" >/dev/null || exit 1
 pip install "scipy==1.10.1" "networkx==2.6.3" "pandas<2" kahypar "pydantic" "pyyaml" >/dev/null || exit 1
 if ! python -c "import cupy, cupyx; cupyx.segmented_sort" 2>/dev/null; then
   cd $W; [ -d cupy-fork ] || git clone -q https://github.com/leofang/cupy.git --branch segmented_sort --recursive cupy-fork || exit 1
