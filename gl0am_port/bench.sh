@@ -17,7 +17,7 @@ nvcc --version | tail -1
 B=$W/bench_$TAG; rm -rf $B; mkdir -p $B
 for i in $(seq 1 $N); do
 R=$B/run$i; mkdir -p $R; cd $R
-tar xzf "/mnt/c/Users/Raafat Abualazm/gls-work/gl0am_in2.tgz"
+tar xzf ${IN:-$W/gl0am_in2_np1.tgz}  # adapter inputs re-pickled under numpy 1.26 so numpy 1.24 (cu118 env) can read them
 python rs_patch.py $S/GL0AM.runSim.py
 cp $S/GL0AM.cupy . ; cp $W/gl0am_run/kahypar_cut.ini .
 K=8
