@@ -1,0 +1,100 @@
+64, 210 MHz, 13.59 W, P8
+### gcd
+gl0am_unit gl0am_event_weighted simpart_gamma1024 simpart_gamma16 wang_density cost_model ref_events 122 ref_final_sig 55897596 n_cycle 25 
+device NVIDIA GeForce RTX 3060 Laptop GPU SMs=30 clockRate=1702000 kHz | data/gcd.bin N=306 cells=252 cycles=25 loops=1 reps=21 threads/block=128 host_ref_events=122
+CONFIG cfg0 k=8 uncovered_added=18 mode=CLOSED grid_syncs_per_cycle=1 evalgates=628 replication=2.672 launch_ms_median=0.4768 busy_clk_max=660848 busy_clk_mean=549049 imbalance(max/mean)=1.204 block_ns_max=448512 comb_mismatch=0/628 flop_mismatch=0/35 events=122 host_ref_events=122
+  per_block_busy_clk_median: 660848 534427 575909 519012 518882 536593 531903 514819
+  per_block_gates: 129 73 73 69 70 71 72 71
+  per_block_levels: 15 15 15 15 14 14 14 14
+  per_block_flops: 5 5 5 5 3 4 4 4
+CONFIG cfg1 k=8 uncovered_added=18 mode=CLOSED grid_syncs_per_cycle=1 evalgates=620 replication=2.638 launch_ms_median=0.4828 busy_clk_max=669841 busy_clk_mean=553817 imbalance(max/mean)=1.209 block_ns_max=453632 comb_mismatch=0/620 flop_mismatch=0/35 events=122 host_ref_events=122
+  per_block_busy_clk_median: 669841 553951 494879 546054 547014 563287 499799 555709
+  per_block_gates: 131 76 67 70 66 77 60 73
+  per_block_levels: 15 15 14 15 14 14 14 15
+  per_block_flops: 6 6 3 4 3 6 2 5
+CONFIG cfg2 k=8 uncovered_added=18 mode=CLOSED grid_syncs_per_cycle=1 evalgates=637 replication=2.711 launch_ms_median=0.4727 busy_clk_max=650969 busy_clk_mean=540070 imbalance(max/mean)=1.205 block_ns_max=442368 comb_mismatch=0/637 flop_mismatch=0/35 events=122 host_ref_events=122
+  per_block_busy_clk_median: 650969 468140 468226 583935 468572 553702 501377 625643
+  per_block_gates: 122 51 56 80 52 76 56 144
+  per_block_levels: 14 14 14 15 14 14 14 15
+  per_block_flops: 3 2 1 5 1 4 1 18
+CONFIG cfg3 k=70 uncovered_added=18 mode=GLOBAL grid_syncs_per_cycle=18 evalgates=235 replication=0.923 launch_ms_median=1.0458 busy_clk_max=606972 busy_clk_mean=168677 imbalance(max/mean)=3.598 block_ns_max=1014784 comb_mismatch=0/235 flop_mismatch=0/35 events=122 host_ref_events=122
+  per_block_busy_clk_median: 606972 107159 102155 188853 105203 104852 111854 209465 107212 107302 107127 102230 103299 112536 157324 154992 160634 154649 156925 170332 172906 198132 179095 153696 177256 157439 146347 154488 157135 159929 164282 203854 149774 149652 163020 142340 200264 178955 156440 159649 142024 160691 195409 149216 162873 161410 166098 167123 175143 177159 151101 177273 158636 148742 161309 165212 191714 166774 181495 181239 166830 234192 192135 199153 193418 204981 195293 209921 180441 234626
+  per_block_gates: 18 0 0 1 0 0 0 5 0 0 0 0 0 0 1 2 2 5 7 7 9 24 4 4 7 5 9 1 2 1 15 1 1 1 1 1 1 1 2 1 1 1 4 2 2 1 1 4 1 3 1 3 1 1 2 1 3 1 3 4 3 22 1 2 1 4 1 4 1 17
+  per_block_levels: 12 0 0 1 0 0 0 1 0 0 0 0 0 0 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1
+  per_block_flops: 0 0 0 1 0 0 0 5 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 1 2 1 3 1 4 1 12
+CONFIG cfg4 k=8 uncovered_added=18 mode=GLOBAL grid_syncs_per_cycle=18 evalgates=235 replication=0.923 launch_ms_median=0.9512 busy_clk_max=806396 busy_clk_mean=647016 imbalance(max/mean)=1.246 block_ns_max=920576 comb_mismatch=0/235 flop_mismatch=0/35 events=122 host_ref_events=122
+  per_block_busy_clk_median: 806396 583268 711878 648572 680817 636973 608937 499286
+  per_block_gates: 44 29 28 27 27 28 27 25
+  per_block_levels: 13 10 10 10 11 10 9 8
+  per_block_flops: 3 1 5 6 5 5 6 4
+CONFIG cfg5 k=8 uncovered_added=18 mode=CLOSED grid_syncs_per_cycle=1 evalgates=618 replication=2.630 launch_ms_median=0.4758 busy_clk_max=635511 busy_clk_mean=557216 imbalance(max/mean)=1.141 block_ns_max=433152 comb_mismatch=0/618 flop_mismatch=0/35 events=122 host_ref_events=122
+  per_block_busy_clk_median: 635511 512945 563599 568097 533192 538316 576823 529247
+  per_block_gates: 128 65 73 71 68 69 75 69
+  per_block_levels: 14 14 15 15 14 15 15 14
+  per_block_flops: 4 3 5 6 5 4 5 3
+### acc8
+gl0am_unit gl0am_event_weighted simpart_gamma1024 simpart_gamma8 wang_density cost_model ref_events 117225 ref_final_sig 35965200 n_cycle 2000 
+device NVIDIA GeForce RTX 3060 Laptop GPU SMs=30 clockRate=1702000 kHz | data/acc8.bin N=150 cells=128 cycles=2000 loops=1 reps=21 threads/block=128 host_ref_events=117225
+CONFIG cfg0 k=8 uncovered_added=10 mode=CLOSED grid_syncs_per_cycle=1 evalgates=278 replication=2.138 launch_ms_median=20.3606 busy_clk_max=31626065 busy_clk_mean=22629355 imbalance(max/mean)=1.398 block_ns_max=20345856 comb_mismatch=0/278 flop_mismatch=0/8 events=117225 host_ref_events=117225
+  per_block_busy_clk_median: 31626065 5051188 29084590 27793256 22092869 20555291 24634775 20196804
+  per_block_gates: 71 0 47 41 32 28 37 22
+  per_block_levels: 8 0 8 8 6 5 6 5
+  per_block_flops: 1 0 1 1 1 1 1 2
+CONFIG cfg1 k=8 uncovered_added=10 mode=CLOSED grid_syncs_per_cycle=1 evalgates=278 replication=2.138 launch_ms_median=19.3652 busy_clk_max=31628058 busy_clk_mean=22585631 imbalance(max/mean)=1.400 block_ns_max=19345408 comb_mismatch=0/278 flop_mismatch=0/8 events=117225 host_ref_events=117225
+  per_block_busy_clk_median: 31628058 5055116 29081083 27797991 20780720 24475847 22251279 19614951
+  per_block_gates: 71 0 47 41 22 37 32 28
+  per_block_levels: 8 0 8 8 5 6 6 5
+  per_block_flops: 1 0 1 1 2 1 1 1
+CONFIG cfg2 k=8 uncovered_added=10 mode=CLOSED grid_syncs_per_cycle=1 evalgates=142 replication=1.092 launch_ms_median=21.4016 busy_clk_max=36618716 busy_clk_mean=12035765 imbalance(max/mean)=3.042 block_ns_max=21382144 comb_mismatch=0/142 flop_mismatch=0/8 events=117225 host_ref_events=117225
+  per_block_busy_clk_median: 15789236 5077886 5078012 5234472 5068242 36618716 18527500 4892059
+  per_block_gates: 20 0 0 0 0 104 18 0
+  per_block_levels: 4 0 0 0 0 8 4 0
+  per_block_flops: 0 0 0 0 0 7 1 0
+CONFIG cfg3 k=28 uncovered_added=10 mode=GLOBAL grid_syncs_per_cycle=11 evalgates=130 replication=0.923 launch_ms_median=41.2940 busy_clk_max=21952492 busy_clk_mean=10240598 imbalance(max/mean)=2.144 block_ns_max=41256960 comb_mismatch=0/130 flop_mismatch=0/8 events=117225 host_ref_events=117225
+  per_block_busy_clk_median: 17506709 5770210 5764545 6056525 5748831 21952492 5701082 5356598 5356761 5730331 9224724 10807080 11344181 9310998 10739856 10841043 10365422 10174873 11988290 11148548 12839730 11854028 13196019 11199439 12642560 14605064 9310827 10199965
+  per_block_gates: 10 0 0 0 0 8 0 0 0 0 5 12 25 7 8 6 7 4 5 3 1 7 4 4 4 3 2 5
+  per_block_levels: 3 0 0 0 0 2 0 0 0 0 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1
+  per_block_flops: 0 0 0 0 0 3 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 2 0 0 2 0 0
+CONFIG cfg4 k=8 uncovered_added=10 mode=GLOBAL grid_syncs_per_cycle=11 evalgates=130 replication=0.923 launch_ms_median=42.2823 busy_clk_max=47305720 busy_clk_mean=36453801 imbalance(max/mean)=1.298 block_ns_max=42258432 comb_mismatch=0/130 flop_mismatch=0/8 events=117225 host_ref_events=117225
+  per_block_busy_clk_median: 47305720 38181103 37365238 33301309 37371870 28286895 34380371 35437903
+  per_block_gates: 26 16 14 15 14 16 14 15
+  per_block_levels: 7 6 7 5 7 5 6 6
+  per_block_flops: 2 1 1 1 1 0 1 1
+CONFIG cfg5 k=8 uncovered_added=10 mode=CLOSED grid_syncs_per_cycle=1 evalgates=278 replication=2.138 launch_ms_median=19.4591 busy_clk_max=31633216 busy_clk_mean=22582946 imbalance(max/mean)=1.401 block_ns_max=19436544 comb_mismatch=0/278 flop_mismatch=0/8 events=117225 host_ref_events=117225
+  per_block_busy_clk_median: 31633216 5053279 29071557 27802802 20773171 24466193 22255832 19607520
+  per_block_gates: 71 0 47 41 22 37 32 28
+  per_block_levels: 8 0 8 8 5 6 6 5
+  per_block_flops: 1 0 1 1 2 1 1 1
+### gcd loops=40 (1000 cycles)
+device NVIDIA GeForce RTX 3060 Laptop GPU SMs=30 clockRate=1702000 kHz | data/gcd.bin N=306 cells=252 cycles=25 loops=40 reps=21 threads/block=128 host_ref_events=1136
+CONFIG cfg0 k=8 uncovered_added=18 mode=CLOSED grid_syncs_per_cycle=1 evalgates=628 replication=2.672 launch_ms_median=15.4498 busy_clk_max=26329273 busy_clk_mean=21877900 imbalance(max/mean)=1.203 block_ns_max=15431680 comb_mismatch=0/628 flop_mismatch=0/35 events=1136 host_ref_events=1136
+  per_block_busy_clk_median: 26329273 21277293 22936101 20690033 20674995 21386105 21212993 20516410
+  per_block_gates: 129 73 73 69 70 71 72 71
+  per_block_levels: 15 15 15 15 14 14 14 14
+  per_block_flops: 5 5 5 5 3 4 4 4
+CONFIG cfg1 k=8 uncovered_added=18 mode=CLOSED grid_syncs_per_cycle=1 evalgates=620 replication=2.638 launch_ms_median=15.6401 busy_clk_max=26690124 busy_clk_mean=22068286 imbalance(max/mean)=1.209 block_ns_max=15614976 comb_mismatch=0/620 flop_mismatch=0/35 events=1136 host_ref_events=1136
+  per_block_busy_clk_median: 26690124 22064660 19711342 21769449 21802158 22423988 19940427 22144139
+  per_block_gates: 131 76 67 70 66 77 60 73
+  per_block_levels: 15 15 14 15 14 14 14 15
+  per_block_flops: 6 6 3 4 3 6 2 5
+CONFIG cfg2 k=8 uncovered_added=18 mode=CLOSED grid_syncs_per_cycle=1 evalgates=637 replication=2.711 launch_ms_median=15.2336 busy_clk_max=25943483 busy_clk_mean=21520115 imbalance(max/mean)=1.206 block_ns_max=15213568 comb_mismatch=0/637 flop_mismatch=0/35 events=1136 host_ref_events=1136
+  per_block_busy_clk_median: 25943483 18667158 18659434 23266410 18681128 22057301 19987935 24898072
+  per_block_gates: 122 51 56 80 52 76 56 144
+  per_block_levels: 14 14 14 15 14 14 14 15
+  per_block_flops: 3 2 1 5 1 4 1 18
+CONFIG cfg3 k=70 uncovered_added=18 mode=GLOBAL grid_syncs_per_cycle=18 evalgates=235 replication=0.923 launch_ms_median=35.0340 busy_clk_max=24293043 busy_clk_mean=6735054 imbalance(max/mean)=3.607 block_ns_max=35011584 comb_mismatch=0/235 flop_mismatch=0/35 events=1136 host_ref_events=1136
+  per_block_busy_clk_median: 24293043 4277958 4084567 7538653 4207375 4193785 4474942 8378109 4287035 4282104 4281620 4085166 4117562 4498612 6275064 6175210 6398920 6175973 6250975 6801750 6888676 7894777 7146643 6125281 7062222 6278055 5829818 6149565 6286820 6382104 6538477 8153362 5980762 5959266 6520966 5683938 8017912 7155873 6243429 6381115 5672265 6426863 7798417 5959491 6492622 6460457 6617783 6650261 7015020 7057503 6041577 7092032 6351498 5948478 6460531 6612031 7646872 6660412 7242622 7221884 6652937 9339468 7656653 7970307 7716137 8159173 7813220 8386133 7206467 9367189
+  per_block_gates: 18 0 0 1 0 0 0 5 0 0 0 0 0 0 1 2 2 5 7 7 9 24 4 4 7 5 9 1 2 1 15 1 1 1 1 1 1 1 2 1 1 1 4 2 2 1 1 4 1 3 1 3 1 1 2 1 3 1 3 4 3 22 1 2 1 4 1 4 1 17
+  per_block_levels: 12 0 0 1 0 0 0 1 0 0 0 0 0 0 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1
+  per_block_flops: 0 0 0 1 0 0 0 5 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 1 2 1 3 1 4 1 12
+CONFIG cfg4 k=8 uncovered_added=18 mode=GLOBAL grid_syncs_per_cycle=18 evalgates=235 replication=0.923 launch_ms_median=31.7622 busy_clk_max=32187166 busy_clk_mean=25773658 imbalance(max/mean)=1.249 block_ns_max=31736832 comb_mismatch=0/235 flop_mismatch=0/35 events=1136 host_ref_events=1136
+  per_block_busy_clk_median: 32187166 23199858 28320229 25849776 27155609 25329317 24265174 19882133
+  per_block_gates: 44 29 28 27 27 28 27 25
+  per_block_levels: 13 10 10 10 11 10 9 8
+  per_block_flops: 3 1 5 6 5 5 6 4
+CONFIG cfg5 k=8 uncovered_added=18 mode=CLOSED grid_syncs_per_cycle=1 evalgates=618 replication=2.630 launch_ms_median=14.9310 busy_clk_max=25322915 busy_clk_mean=22203074 imbalance(max/mean)=1.141 block_ns_max=14904320 comb_mismatch=0/618 flop_mismatch=0/35 events=1136 host_ref_events=1136
+  per_block_busy_clk_median: 25322915 20444264 22433460 22655667 21252801 21448692 22983494 21083301
+  per_block_gates: 128 65 73 71 68 69 75 69
+  per_block_levels: 14 14 15 15 14 15 15 14
+  per_block_flops: 4 3 5 6 5 4 5 3
+69, 1972 MHz, 53.18 W, P0
